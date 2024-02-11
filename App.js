@@ -17,13 +17,15 @@ import Slider from '@react-native-community/slider';
 
 const statusBarHeight = StatusBar.currentHeight
 
+const OPENAI_API_KEY = "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";
+
 export default function roteiro() {
   const [city, setCity] = useState('');
   const [days, setDays] = useState(3);
   const [travel, setTravel] = useState('');
   const [loading, setLoading] = useState(false);
 
-  function handleGenerate(){
+  async function handleGenerate(){
     if(city === ''){
       Alert.alert("Atenção", "Preencha a cidade de destino")
       return;
@@ -35,7 +37,36 @@ export default function roteiro() {
 
     const prompt = `Crie um roteiro para uma viagem de exatos ${days.toFixed(0)} dias na cidade de ${city}, busque por lugares turisticos, lugares mais visitados, seja preciso nos dias de estadia fornecidos e limite o roteiro apenas na cidade fornecida. Forneça apenas em tópicos com nome do local onde ir em cada dia.`
     
-
+    fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers:{
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${OPENAI_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: "gpt-3.5-turbo-16k-0613",
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.20,
+        max_tokens: 500,
+        top_p: 1,
+      })
+    })
+    .then(response => response.json())
+    .then((data) => {
+      console.log(data);
+      setTravel(data.choices[0].message.content);
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+    .finally(() => {
+      setLoading(false);
+    })
   }
 
   return (
@@ -78,7 +109,8 @@ export default function roteiro() {
 
         {travel && (
           <View style={styles.content}>
-            <Text style={styles.title}>Roteiro da sua viagem ✈</Text>
+            <Text style={styles.title}>Roteiro da sua viagem 👇</Text>
+            <Text style={styles.textTravel}>{travel}</Text>
           </View>
         )}
         
@@ -154,7 +186,12 @@ const styles = StyleSheet.create({
     color: '#000',
     fontSize: 18,
     fontWeight: 'bold',
-    textAlign:'center'
+    textAlign:'center',
+    marginBottom: 15
+  },
+  textTravel:{
+    color: '#000',
+    fontSize: 16
   },
   textLoading:{
     fontSize: 20,
