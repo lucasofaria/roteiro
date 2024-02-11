@@ -44,7 +44,7 @@ export default function roteiro() {
         Authorization: `Bearer ${OPENAI_API_KEY}`
       },
       body: JSON.stringify({
-        model: "gpt-3.5-turbo-16k-0613",
+        model: "gpt-3.5-turbo",
         messages: [
           {
             role: 'user',
