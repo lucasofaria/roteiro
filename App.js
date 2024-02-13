@@ -17,7 +17,7 @@ import Slider from '@react-native-community/slider';
 
 const statusBarHeight = StatusBar.currentHeight
 
-const OPENAI_API_KEY = "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";
+const OPENAI_API_KEY = "suaChave";
 
 export default function roteiro() {
   const [city, setCity] = useState('');
